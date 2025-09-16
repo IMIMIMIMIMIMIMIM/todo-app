@@ -1,5 +1,5 @@
 import type { Folder } from "../type";
-import FolderItem from "./FolderItem";
+import CategoryItem from "./CategoryItem";
 
 type Props = {
   folders: Folder[];
@@ -8,16 +8,16 @@ type Props = {
   deleteFolder: (id: number) => void;
 };
 
-export default function FolderList({
+const CategoryList = ({
   folders,
   currentFolderId,
   setCurrentFolderId,
   deleteFolder,
-}: Props) {
+}: Props) => {
   const renderChildren = (list: Folder[]) => (
     <>
       {list.map((f) => (
-        <FolderItem
+        <CategoryItem
           key={f.id}
           folder={f}
           currentFolderId={currentFolderId}
@@ -30,4 +30,6 @@ export default function FolderList({
   );
 
   return <>{folders.map((f) => renderChildren([f]))}</>;
-}
+};
+
+export default CategoryList;

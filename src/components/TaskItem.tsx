@@ -18,7 +18,7 @@ type Props = {
   onDelete: (id: number) => void;
 };
 
-export default function TodoItem({ todo, onToggle, onDelete }: Props) {
+const TaskItem = ({ todo, onToggle, onDelete }: Props) => {
   return (
     <Fade in={true}>
       <Paper
@@ -98,4 +98,6 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
       </Paper>
     </Fade>
   );
-}
+};
+
+export default TaskItem;

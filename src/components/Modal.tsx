@@ -22,13 +22,18 @@ type Props = {
   onConfirm: () => void;
 };
 
-export default function Modal({
+const Modal = ({
   type,
   inputValue,
   setInputValue,
   onClose,
   onConfirm,
-}: Props) {
+}: Props) => {
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && inputValue.trim()) {
+      onConfirm();
+    }
+  };
   return (
     <Dialog
       open
@@ -59,7 +64,7 @@ export default function Modal({
             <AssignmentIcon color="secondary" />
           )}
           <Typography variant="h6" fontWeight={600}>
-            {type === "folder" ? "새 폴더 만들기" : "새 할 일 추가"}
+            {type === "folder" ? "새 카테고리 만들기" : "새 할 일 추가"}
           </Typography>
         </Box>
         <IconButton onClick={onClose} size="small">
@@ -74,8 +79,11 @@ export default function Modal({
           variant="outlined"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder={
-            type === "folder" ? "폴더 이름을 입력하세요" : "할 일을 입력하세요"
+            type === "folder"
+              ? "카테고리 이름을 입력하세요"
+              : "할 일을 입력하세요"
           }
           sx={{
             "& .MuiOutlinedInput-root": {
@@ -101,4 +109,6 @@ export default function Modal({
       </DialogActions>
     </Dialog>
   );
-}
+};
+
+export default Modal;

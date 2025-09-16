@@ -1,22 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import type { Folder, Todo } from "./type";
-import FolderList from "./components/FolderList";
-import TodoItem from "./components/TodoItem";
-import Modal from "./components/Modal";
 import { getPathNames, findFolderById } from "./util";
+import Header from "./components/Header";
+import Content from "./components/Content";
+import Sidebar from "./components/Sidebar";
+import Modal from "./components/Modal";
 
 import {
   Box,
-  Button,
-  Typography,
-  Stack,
-  Paper,
-  AppBar,
-  Toolbar,
-  Chip,
-  Card,
-  CardContent,
-  Divider,
   ThemeProvider,
   createTheme,
   CssBaseline,
@@ -25,13 +16,10 @@ import {
   DialogContent,
   DialogActions,
   DialogContentText,
+  Button,
 } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import AddIcon from "@mui/icons-material/Add";
-import FolderIcon from "@mui/icons-material/Folder";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
-// 모던한 테마 생성
 const theme = createTheme({
   palette: {
     primary: {
@@ -105,6 +93,8 @@ export default function App() {
     id: number;
     name: string;
   } | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("folders", JSON.stringify(folders));
@@ -140,7 +130,6 @@ export default function App() {
       completed: false,
     };
     if (currentFolderId === null) {
-      // 메인 화면 - mainTodos에 할 일 추가
       setMainTodos([...mainTodos, newTodo]);
     } else {
       const updateFolders = [...folders];
@@ -153,7 +142,6 @@ export default function App() {
   };
 
   const toggleTodo = (id: number) => {
-    // 메인 화면의 할 일 토글
     const mainTodo = mainTodos.find((t) => t.id === id);
     if (mainTodo) {
       setMainTodos(
@@ -164,7 +152,6 @@ export default function App() {
       return;
     }
 
-    // 폴더 내의 할 일 토글
     const toggleInFolder = (list: Folder[]) => {
       list.forEach((f) => {
         f.todos = f.todos.map((t) =>
@@ -179,7 +166,6 @@ export default function App() {
   };
 
   const handleDeleteTodo = (id: number) => {
-    // 메인 화면의 할 일 찾기
     const mainTodo = mainTodos.find((t) => t.id === id);
     if (mainTodo) {
       setDeleteTarget({ type: "todo", id, name: mainTodo.title });
@@ -187,7 +173,6 @@ export default function App() {
       return;
     }
 
-    // 폴더 내의 할 일 찾기
     const findTodoInFolder = (
       list: Folder[]
     ): { todo: Todo; folderName: string } | null => {
@@ -228,12 +213,10 @@ export default function App() {
     if (!deleteTarget) return;
 
     if (deleteTarget.type === "todo") {
-      // 메인 화면의 할 일 삭제
       const mainTodo = mainTodos.find((t) => t.id === deleteTarget.id);
       if (mainTodo) {
         setMainTodos(mainTodos.filter((t) => t.id !== deleteTarget.id));
       } else {
-        // 폴더 내의 할 일 삭제
         const deleteInFolder = (list: Folder[]) => {
           list.forEach((f) => {
             f.todos = f.todos.filter((t) => t.id !== deleteTarget.id);
@@ -245,7 +228,6 @@ export default function App() {
         setFolders(newFolders);
       }
     } else {
-      // 폴더 삭제
       const removeFolder = (list: Folder[]): Folder[] =>
         list.filter((f) => {
           if (f.id === deleteTarget.id) return false;
@@ -261,283 +243,56 @@ export default function App() {
   };
 
   const pathNames = getPathNames(folders, currentFolderId);
-
   const currentFolder =
     currentFolderId === null
       ? { folders, todos: mainTodos }
       : findFolderById(currentFolderId, folders);
+
+  const handleSidebarClose = () => {
+    setSidebarOpen(false);
+    setTimeout(() => setSidebarVisible(false), 300);
+  };
+
+  const handleTodayClick = () => {
+    setCurrentFolderId(null);
+    handleSidebarClose();
+  };
+
+  const handleWeekClick = () => {
+    // 일주일 기능 구현 예정
+    handleSidebarClose();
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box
         sx={{
-          height: "667px",
+          minHeight: "100vh",
           bgcolor: "background.default",
           width: "375px",
           margin: "0 auto",
-          overflow: "hidden",
           boxSizing: "border-box",
         }}
       >
-        {/* 상단 앱바 */}
-        <AppBar
-          position="static"
-          elevation={0}
-          sx={{
-            bgcolor: "white",
-            color: "text.primary",
-            borderBottom: "1px solid",
-            borderColor: "divider",
+        <Header
+          onMenuClick={() => {
+            setSidebarVisible(true);
+            setSidebarOpen(true);
           }}
-        >
-          <Toolbar sx={{ minHeight: 56, px: 2 }}>
-            <AssignmentIcon
-              sx={{ mr: 1.5, color: "primary.main", fontSize: 24 }}
-            />
-            <Box sx={{ flexGrow: 1 }} />
-            <Stack direction="row" spacing={1}>
-              <Button
-                variant="contained"
-                startIcon={<FolderIcon sx={{ fontSize: 18 }} />}
-                onClick={() => setModalOpen("folder")}
-                size="small"
-                sx={{
-                  fontSize: "0.8rem",
-                  px: 1.5,
-                  py: 0.5,
-                  minWidth: "auto",
-                  height: 32,
-                }}
-              >
-                폴더
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon sx={{ fontSize: 18 }} />}
-                onClick={() => setModalOpen("todo")}
-                size="small"
-                color="secondary"
-                sx={{
-                  fontSize: "0.8rem",
-                  px: 1.5,
-                  py: 0.5,
-                  minWidth: "auto",
-                  height: 32,
-                }}
-              >
-                할 일
-              </Button>
-            </Stack>
-          </Toolbar>
-        </AppBar>
+          onFolderClick={() => setModalOpen("folder")}
+          onTodoClick={() => setModalOpen("todo")}
+        />
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            py: 1,
-            px: 1,
-            width: "100%",
-            height: "calc(667px - 56px)",
-            boxSizing: "border-box",
-          }}
-        >
-          <Box
-            sx={{
-              width: "100%",
-              maxWidth: "100%",
-              boxSizing: "border-box",
-            }}
-          >
-            {/* 브레드크럼 */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2,
-                mb: 1.5,
-                bgcolor: "background.paper",
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                sx={{
-                  overflowX: "hidden",
-                  flexWrap: "wrap",
-                  gap: 0.5,
-                }}
-              >
-                {pathNames.map((p, idx) => (
-                  <React.Fragment key={p.id ?? "main"}>
-                    <Chip
-                      icon={
-                        p.name === "메인" ? (
-                          <HomeIcon sx={{ fontSize: 16 }} />
-                        ) : undefined
-                      }
-                      label={p.name === "메인" ? "홈" : p.name}
-                      onClick={() => setCurrentFolderId(p.id)}
-                      variant={
-                        idx === pathNames.length - 1 ? "filled" : "outlined"
-                      }
-                      color={
-                        idx === pathNames.length - 1 ? "primary" : "default"
-                      }
-                      size="small"
-                      sx={{
-                        cursor: "pointer",
-                        fontSize: "0.8rem",
-                        height: 28,
-                        "& .MuiChip-label": {
-                          px: 1.5,
-                        },
-                        "&:hover": {
-                          bgcolor:
-                            idx === pathNames.length - 1
-                              ? "primary.dark"
-                              : "action.hover",
-                        },
-                      }}
-                    />
-                    {idx < pathNames.length - 1 && (
-                      <Typography
-                        sx={{
-                          mx: 0.5,
-                          color: "text.secondary",
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        &gt;
-                      </Typography>
-                    )}
-                  </React.Fragment>
-                ))}
-              </Stack>
-            </Paper>
-
-            {/* 메인 컨텐츠 */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-              }}
-            >
-              {/* 폴더 섹션 */}
-              <Card
-                elevation={0}
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
-                  width: "100%",
-                }}
-              >
-                <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1.5,
-                      fontSize: "1rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    <FolderIcon color="primary" sx={{ fontSize: 20 }} />
-                    폴더
-                  </Typography>
-                  <Divider sx={{ mb: 1.5 }} />
-                  {currentFolder &&
-                  currentFolder.folders &&
-                  currentFolder.folders.length > 0 ? (
-                    <FolderList
-                      folders={currentFolder.folders}
-                      currentFolderId={currentFolderId}
-                      setCurrentFolderId={setCurrentFolderId}
-                      deleteFolder={handleDeleteFolder}
-                    />
-                  ) : (
-                    <Box
-                      sx={{
-                        textAlign: "center",
-                        py: 4,
-                        color: "text.secondary",
-                      }}
-                    >
-                      <FolderIcon sx={{ fontSize: 40, opacity: 0.3, mb: 1 }} />
-                      <Typography variant="body2" sx={{ fontSize: "0.9rem" }}>
-                        폴더가 없습니다
-                      </Typography>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* 할 일 섹션 */}
-              <Card
-                elevation={0}
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
-                  width: "100%",
-                }}
-              >
-                <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1.5,
-                      fontSize: "1rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    <AssignmentIcon color="secondary" sx={{ fontSize: 20 }} />할
-                    일
-                  </Typography>
-                  <Divider sx={{ mb: 1.5 }} />
-                  {currentFolder &&
-                  currentFolder.todos &&
-                  currentFolder.todos.length > 0 ? (
-                    <Box>
-                      {currentFolder.todos.map((todo) => (
-                        <TodoItem
-                          key={todo.id}
-                          todo={todo}
-                          onToggle={toggleTodo}
-                          onDelete={handleDeleteTodo}
-                        />
-                      ))}
-                    </Box>
-                  ) : (
-                    <Box
-                      sx={{
-                        textAlign: "center",
-                        py: 4,
-                        color: "text.secondary",
-                      }}
-                    >
-                      <AssignmentIcon
-                        sx={{ fontSize: 40, opacity: 0.3, mb: 1 }}
-                      />
-                      <Typography variant="body2" sx={{ fontSize: "0.9rem" }}>
-                        할 일이 없습니다
-                      </Typography>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Box>
-          </Box>
-        </Box>
+        <Content
+          pathNames={pathNames}
+          currentFolder={currentFolder}
+          currentFolderId={currentFolderId}
+          onFolderClick={setCurrentFolderId}
+          onTodoToggle={toggleTodo}
+          onTodoDelete={handleDeleteTodo}
+          onFolderDelete={handleDeleteFolder}
+        />
 
         {modalOpen && (
           <Modal
@@ -549,7 +304,6 @@ export default function App() {
           />
         )}
 
-        {/* 삭제 확인 다이얼로그 */}
         <Dialog
           open={deleteConfirmOpen}
           onClose={() => setDeleteConfirmOpen(false)}
@@ -578,7 +332,7 @@ export default function App() {
             <DialogContentText>
               {deleteTarget?.type === "todo"
                 ? `"${deleteTarget.name}" 할 일을 삭제하시겠습니까?`
-                : `"${deleteTarget?.name}" 폴더를 삭제하시겠습니까? 폴더 안의 모든 내용이 함께 삭제됩니다.`}
+                : `"${deleteTarget?.name}" 카테고리를 삭제하시겠습니까? 카테고리 안의 모든 내용이 함께 삭제됩니다.`}
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ p: 3, pt: 1 }}>
@@ -599,6 +353,14 @@ export default function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        <Sidebar
+          open={sidebarOpen}
+          visible={sidebarVisible}
+          onClose={handleSidebarClose}
+          onTodayClick={handleTodayClick}
+          onWeekClick={handleWeekClick}
+        />
       </Box>
     </ThemeProvider>
   );
