@@ -1,69 +1,73 @@
-# React + TypeScript + Vite
+# 📝 할 일 앱 (Todo App)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite로 만든 투두 애플리케이션입니다.
 
-Currently, two official plugins are available:
+## ✨ 주요 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📂 **카테고리 관리**: 할 일을 카테고리별로 분류하여 관리
+- ✅ **할 일 관리**: 할 일 추가, 완료, 삭제 기능
+- 🗂️ **계층 구조**: 카테고리 안에 하위 카테고리 생성 가능
+- 📱 **반응형 디자인**: 모바일 친화적인 UI/UX
+- 💾 **로컬 저장**: 브라우저 로컬스토리지에 데이터 저장
+- 🎨 **모던 UI**: Material-UI 기반의 깔끔한 디자인
 
-## Expanding the ESLint configuration
+## 🚀 시작하기
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 설치
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ 기술 스택
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Frontend**: React + TypeScript
+- **빌드 도구**: Vite
+- **UI 라이브러리**: Material-UI (MUI)
+- **상태 관리**: React Hooks (useState, useEffect)
+- **데이터 저장**: LocalStorage
+- **스타일링**: Emotion (MUI 내장)
+- **AI**: Cursor
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📁 프로젝트 구조
+
+```
+src/
+├── components/          # React 컴포넌트
+│   ├── Header.tsx      # 상단 앱바
+│   ├── Content.tsx     # 메인 콘텐츠
+│   ├── Sidebar.tsx     # 사이드바
+│   ├── CategoryList.tsx # 카테고리 목록
+│   ├── CategoryItem.tsx # 카테고리 아이템
+│   ├── TaskItem.tsx    # 할 일 아이템
+│   └── Modal.tsx       # 모달 다이얼로그
+├── type.ts             # TypeScript 타입 정의
+├── util.ts             # 유틸리티 함수
+└── App.tsx             # 메인 앱 컴포넌트
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🎯 사용법
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 카테고리 관리
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. 상단의 "카테고리" 버튼 클릭
+2. 카테고리 이름 입력 후 "만들기" 버튼 클릭
+3. 카테고리 클릭하여 해당 카테고리로 이동
+4. 하위 카테고리가 있는 경우 토글 버튼으로 펼치기/접기
+
+### 할 일 관리
+
+1. 상단의 "할 일" 버튼 클릭
+2. 할 일 내용 입력 후 엔터키 또는 "추가" 버튼 클릭
+3. 체크박스 혹은 할 일일 클릭하여 완료/미완료 토글
+4. 삭제 버튼으로 할 일 제거
+
+### 사이드바
+
+- 좌상단 햄버거 메뉴(☰) 클릭하여 사이드바 열기
+- "오늘" 메뉴로 메인 화면 이동
+- "일주일" 메뉴 (향후 구현 예정)
+
+## 🔮 향후 계획
+
+- [ ] 일주일 뷰 기능 구현
+- [ ] 할 일 우선순위 설정
+- [ ] 할 일 검색 기능
+- [ ] 다크 모드 지원
+- [ ] 데이터 내보내기/가져오기
