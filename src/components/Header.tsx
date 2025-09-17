@@ -15,7 +15,7 @@ const Header = ({ onMenuClick, onFolderClick, onTodoClick }: Props) => {
       position="static"
       elevation={0}
       sx={{
-        bgcolor: "white",
+        bgcolor: "background.paper",
         color: "text.primary",
         borderBottom: "1px solid",
         borderColor: "divider",

@@ -7,6 +7,8 @@ import {
   Slide,
   Fade,
 } from "@mui/material";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import CloseIcon from "@mui/icons-material/Close";
 import TodayIcon from "@mui/icons-material/Today";
 import CalendarViewWeekIcon from "@mui/icons-material/CalendarViewWeek";
@@ -17,6 +19,8 @@ type Props = {
   onClose: () => void;
   onTodayClick: () => void;
   onWeekClick: () => void;
+  isDark?: boolean;
+  onToggleDarkMode?: () => void;
 };
 
 const Sidebar = ({
@@ -25,6 +29,8 @@ const Sidebar = ({
   onClose,
   onTodayClick,
   onWeekClick,
+  isDark = false,
+  onToggleDarkMode,
 }: Props) => {
   if (!visible) return null;
 
@@ -109,6 +115,19 @@ const Sidebar = ({
                 일주일
               </Button>
             </Stack>
+          </Box>
+
+          {/* 다크 모드 토글 - 우하단 고정 */}
+          <Box sx={{ p: 2, pt: 0 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <IconButton
+                onClick={onToggleDarkMode}
+                size="small"
+                sx={{ bgcolor: "action.hover" }}
+              >
+                {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Box>
           </Box>
         </Box>
       </Slide>

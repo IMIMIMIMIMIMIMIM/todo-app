@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Folder, Todo } from "./type";
 import { getPathNames, findFolderById } from "./util";
 import Header from "./components/Header";
@@ -20,60 +20,65 @@ import {
 } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#6366f1",
-      light: "#a5b4fc",
-      dark: "#4338ca",
-    },
-    secondary: {
-      main: "#ec4899",
-      light: "#f9a8d4",
-      dark: "#be185d",
-    },
-    background: {
-      default: "#f8fafc",
-      paper: "#ffffff",
-    },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 500,
-    },
-  },
-  shape: {
-    borderRadius: 12,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
-          fontWeight: 500,
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          boxShadow:
-            "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-          "&:hover": {
-            boxShadow:
-              "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-          },
-        },
-      },
-    },
-  },
-});
+// Theme will be created dynamically based on isDark state inside the component
 
 export default function App() {
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    const saved = localStorage.getItem("isDark");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: isDark ? "dark" : "light",
+          primary: {
+            main: "#6366f1",
+            light: "#a5b4fc",
+            dark: "#4338ca",
+          },
+          secondary: {
+            main: "#ec4899",
+            light: "#f9a8d4",
+            dark: "#be185d",
+          },
+          background: isDark
+            ? { default: "#0b1020", paper: "#11162a" }
+            : { default: "#f8fafc", paper: "#ffffff" },
+        },
+        typography: {
+          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+          h4: { fontWeight: 600 },
+          h6: { fontWeight: 500 },
+        },
+        shape: { borderRadius: 12 },
+        components: {
+          MuiButton: {
+            styleOverrides: {
+              root: { textTransform: "none", fontWeight: 500 },
+            },
+          },
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                boxShadow:
+                  "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+                "&:hover": {
+                  boxShadow:
+                    "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+                },
+              },
+            },
+          },
+        },
+      }),
+    [isDark]
+  );
+
+  useEffect(() => {
+    localStorage.setItem("isDark", JSON.stringify(isDark));
+  }, [isDark]);
   const [folders, setFolders] = useState<Folder[]>(() => {
     const stored = localStorage.getItem("folders");
     return stored ? JSON.parse(stored) : [];
@@ -360,6 +365,8 @@ export default function App() {
           onClose={handleSidebarClose}
           onTodayClick={handleTodayClick}
           onWeekClick={handleWeekClick}
+          isDark={isDark}
+          onToggleDarkMode={() => setIsDark((v) => !v)}
         />
       </Box>
     </ThemeProvider>
